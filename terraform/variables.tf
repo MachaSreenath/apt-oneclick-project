@@ -37,3 +37,12 @@ variable "key_name" {
 variable "asg_min_size" { default = 1 }
 variable "asg_max_size" { default = 2 }
 variable "asg_desired" { default = 1 }
+
+
+variable "aws_access_key" {
+  type = string
+}
+
+variable "aws_secret_key" {
+  type = string
+}
