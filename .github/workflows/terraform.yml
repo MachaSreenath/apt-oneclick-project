@@ -10,29 +10,53 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      # Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: 1.6.2
+      # Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.6.2
 
-    - name: Terraform Init
-      working-directory: ./terraform
-      run: terraform init
+      # List Terraform files
+      - name: List Terraform files
+        run: ls -R ./terraform
 
-    - name: Terraform Validate
-      working-directory: ./terraform
-      run: terraform validate
+      # Terraform init
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init -input=false
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
-    - name: Terraform Plan
-      working-directory: ./terraform
-      run: terraform plan
+      # Terraform Validate
+      - name: Terraform Validate
+        working-directory: ./terraform
+        run: terraform validate
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
-    - name: Terraform Apply
-      if: github.event_name == 'workflow_dispatch'
-      working-directory: ./terraform
-      run: terraform apply -auto-approve
+      # Terraform Plan
+      - name: Terraform Plan
+        working-directory: ./terraform
+        run: terraform plan -input=false
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
-
+      # Terraform Apply
+      - name: Terraform Apply
+        if: github.event_name == 'workflow_dispatch'
+        working-directory: ./terraform
+        run: terraform apply -auto-approve
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
